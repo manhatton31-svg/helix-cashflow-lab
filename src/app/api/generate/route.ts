@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   extractJsonArray,
   generateWithSystem,
-  hasApiKey,
+  liveAiEnabled,
 } from "@/lib/ai-core";
 import { sideHustleGeneratorPrompt, SYSTEM_CASHFLOW } from "@/lib/prompts";
 import { mockSideHustles } from "@/lib/mock";

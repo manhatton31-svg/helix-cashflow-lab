@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   extractJsonArray,
   generateWithSystem,
-  hasApiKey,
+  liveAiEnabled,
 } from "@/lib/ai-core";
 import { expenseOptimizerPrompt, SYSTEM_CASHFLOW } from "@/lib/prompts";
 import { mockExpenseCuts } from "@/lib/mock";
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         cuts: mockExpenseCuts(expenses),
         source: "mock",
-        message: "No API key — mock optimization. Set XAI_API_KEY for live Grok.",
+        message: "Free mock path (HELIX_USE_GROK not enabled). Zero xAI cost.",
         prompt,
       });
     }
