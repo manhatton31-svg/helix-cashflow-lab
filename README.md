@@ -1,3 +1,21 @@
-# Cashflow Lab (standalone deploy)
+# Helix Cashflow Lab
 
-Mock by default. Live Grok only if `HELIX_USE_GROK=1` + `XAI_API_KEY` in Vercel env.
+Full Next.js app. **Mock by default** — no xAI cost.
+
+## Live
+- Production: https://helix-cashflow-lab.vercel.app (static mock shell or Next after git link)
+- Repo: this one
+
+## Cost
+- Default: free mock (`liveAiEnabled()` false unless `HELIX_USE_GROK=1` + `XAI_API_KEY`)
+- Do **not** set HELIX_USE_GROK unless you want paid Grok
+
+## Local
+```bash
+npm install && npm run dev
+```
+
+## Smoke
+1. Open /onboarding → set profile → Save
+2. /generator → Generate ideas (mock)
+3. Confirm source=mock
