@@ -35,12 +35,12 @@ export async function POST(req: Request) {
 
     const prompt = sideHustleGeneratorPrompt(safe);
 
-    if (!hasApiKey()) {
+    if (!liveAiEnabled()) {
       const ideas = mockSideHustles(safe);
       return NextResponse.json({
         ideas,
         source: "mock",
-        message: "No API key — using profile-aware mock ideas. Set XAI_API_KEY for live Grok.",
+        message: "Free mock path (HELIX_USE_GROK not enabled). Zero xAI cost.",
         prompt,
       });
     }

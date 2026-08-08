@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     const prompt = expenseOptimizerPrompt(expenses);
 
-    if (!hasApiKey()) {
+    if (!liveAiEnabled()) {
       return NextResponse.json({
         cuts: mockExpenseCuts(expenses),
         source: "mock",
