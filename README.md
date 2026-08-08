@@ -19,3 +19,15 @@ npm install && npm run dev
 1. Open /onboarding → set profile → Save
 2. /generator → Generate ideas (mock)
 3. Confirm source=mock
+
+## Full Next (production)
+
+This repo **is** the full Next.js Cashflow Lab (not static-only).
+
+Vercel: import `manhatton31-svg/helix-cashflow-lab`, Framework=Next.js.
+
+**Env (cost floor):**
+- Do **not** set `HELIX_USE_GROK` (mock default)
+- Optional later: `HELIX_USE_GROK=1` + `XAI_API_KEY`
+
+**Contracts:** `/api/generate` returns `ideaProfiles` + `topIdeaProfile` (v1) for Helix Spark.
