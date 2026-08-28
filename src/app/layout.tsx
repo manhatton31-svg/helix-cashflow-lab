@@ -1,4 +1,7 @@
-export const metadata = { title: "Helix Cashflow Lab", description: "Free mock cashflow ideas" };
+export const metadata = {
+  title: "Helix Cashflow Lab",
+  description: "Side-hustle idea lab. Free mock for unpaid visitors; Grok unlock after Whop pay.",
+};
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

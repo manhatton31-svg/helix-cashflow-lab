@@ -19,7 +19,11 @@ export interface GenerateResult {
   source: "live" | "fallback";
 }
 
-const DEFAULT_MODEL = "grok-2-latest";
+function defaultModel(): string {
+  if (typeof process === "undefined") return "grok-4-latest";
+  return (process.env.XAI_MODEL || "").trim() || "grok-4-latest";
+}
+
 const XAI_URL = "https://api.x.ai/v1/chat/completions";
 
 export function hasApiKey(): boolean {
@@ -27,10 +31,14 @@ export function hasApiKey(): boolean {
   return !!(process.env.XAI_API_KEY || process.env.GROK_API_KEY);
 }
 
-/** Cost gate: live calls require HELIX_USE_GROK=1 AND a key. Default = mock/fallback. */
+/**
+ * Server can call Grok (xAI key present; HELIX_USE_GROK=0 is a kill switch).
+ * API routes still require a paid unlock before calling generate().
+ */
 export function liveAiEnabled(): boolean {
   if (typeof process === "undefined") return false;
-  return process.env.HELIX_USE_GROK === "1" && hasApiKey();
+  if (process.env.HELIX_USE_GROK === "0") return false;
+  return hasApiKey();
 }
 
 function getApiKey(): string | undefined {
@@ -47,7 +55,7 @@ export async function generate(
   options: GenerateOptions = {}
 ): Promise<GenerateResult> {
   const apiKey = getApiKey();
-  const model = options.model || DEFAULT_MODEL;
+  const model = options.model || defaultModel();
 
   if (!liveAiEnabled()) {
     return {

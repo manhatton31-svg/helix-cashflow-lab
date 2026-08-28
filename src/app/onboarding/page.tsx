@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AccessBar } from "@/components/AccessBar";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -23,10 +24,22 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main style={{ maxWidth: 720, margin: "2rem auto", padding: "0 1rem", fontFamily: "system-ui,sans-serif", color: "#e8eef7", background: "#0b1020", minHeight: "100vh" }}>
-      <span style={{ background: "#1a3d2a", color: "#7dffa2", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999 }}>FREE MOCK · HELIX_USE_GROK OFF</span>
+    <main
+      style={{
+        maxWidth: 720,
+        margin: "2rem auto",
+        padding: "0 1rem",
+        fontFamily: "system-ui,sans-serif",
+        color: "#e8eef7",
+        background: "#0b1020",
+        minHeight: "100vh",
+      }}
+    >
+      <AccessBar />
       <h1>Cashflow Lab — Onboarding</h1>
-      <p style={{ color: "#8b9bb4" }}>Profile for free mock idea generation. Zero API cost.</p>
+      <p style={{ color: "#8b9bb4" }}>
+        Profile for idea generation. Unpaid stays on the free mock. Paid unlock uses Grok.
+      </p>
       <label style={{ display: "block", marginTop: 12, fontSize: 12, color: "#8b9bb4" }}>Skills</label>
       <input style={inp} value={skills} onChange={(e) => setSkills(e.target.value)} />
       <label style={{ display: "block", marginTop: 12, fontSize: 12, color: "#8b9bb4" }}>Hours / week</label>
@@ -35,9 +48,29 @@ export default function OnboardingPage() {
       <input style={inp} type="number" value={capital} onChange={(e) => setCapital(Number(e.target.value))} />
       <label style={{ display: "block", marginTop: 12, fontSize: 12, color: "#8b9bb4" }}>Location</label>
       <input style={inp} value={location} onChange={(e) => setLocation(e.target.value)} />
-      <button style={btn} onClick={save}>Save & go to generator</button>
+      <button style={btn} onClick={save}>
+        Save & go to generator
+      </button>
     </main>
   );
 }
-const inp: React.CSSProperties = { width: "100%", boxSizing: "border-box", marginTop: 4, padding: 8, borderRadius: 8, border: "1px solid #2a3a50", background: "#111827", color: "#e8eef7" };
-const btn: React.CSSProperties = { marginTop: 16, background: "#2f6fed", color: "#fff", border: 0, borderRadius: 8, padding: "10px 14px", fontWeight: 600, cursor: "pointer" };
+const inp: React.CSSProperties = {
+  width: "100%",
+  boxSizing: "border-box",
+  marginTop: 4,
+  padding: 8,
+  borderRadius: 8,
+  border: "1px solid #2a3a50",
+  background: "#111827",
+  color: "#e8eef7",
+};
+const btn: React.CSSProperties = {
+  marginTop: 16,
+  background: "#2f6fed",
+  color: "#fff",
+  border: 0,
+  borderRadius: 8,
+  padding: "10px 14px",
+  fontWeight: 600,
+  cursor: "pointer",
+};

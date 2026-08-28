@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  extractJsonArray,
-  generateWithSystem,
-  liveAiEnabled,
-} from "@/lib/ai-core";
+import { generateWithSystem, extractJsonArray } from "@/lib/ai-core";
 import { expenseOptimizerPrompt, SYSTEM_CASHFLOW } from "@/lib/prompts";
 import { mockExpenseCuts } from "@/lib/mock";
+import { liveGrokGate, requestIsUnlocked, tokenUnlocks } from "@/lib/access";
 
 export const runtime = "nodejs";
 
@@ -13,6 +10,7 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json()) as {
       expenses?: { name: string; monthly: number }[];
+      access?: string;
     };
     const expenses = (body.expenses || [])
       .filter((e) => e && e.name)
@@ -23,14 +21,29 @@ export async function POST(req: Request) {
     }
 
     const prompt = expenseOptimizerPrompt(expenses);
+    const unlocked = requestIsUnlocked(req) || tokenUnlocks(body.access);
 
-    if (!liveAiEnabled()) {
+    if (!unlocked) {
       return NextResponse.json({
         cuts: mockExpenseCuts(expenses),
         source: "mock",
-        message: "Free mock path (HELIX_USE_GROK not enabled). Zero xAI cost.",
+        unlocked: false,
+        message: "Free mock path (unpaid). Zero xAI cost. Pay on Whop to unlock Grok.",
         prompt,
       });
+    }
+
+    const gate = liveGrokGate();
+    if (!gate.ok) {
+      return NextResponse.json(
+        {
+          error: gate.code,
+          source: "error",
+          unlocked: true,
+          message: gate.message,
+        },
+        { status: 503 }
+      );
     }
 
     const result = await generateWithSystem(SYSTEM_CASHFLOW, prompt, {
@@ -39,23 +52,29 @@ export async function POST(req: Request) {
     });
 
     if (result.error || result.source !== "live") {
-      return NextResponse.json({
-        cuts: mockExpenseCuts(expenses),
-        source: "mock",
-        message: result.text || "Grok unavailable — mock fallback",
-        prompt,
-      });
+      return NextResponse.json(
+        {
+          error: result.error || "grok_unavailable",
+          source: "error",
+          unlocked: true,
+          message: result.text || "Grok did not return a live result. Not falling back to mock for a paid session.",
+        },
+        { status: 502 }
+      );
     }
 
     const parsed = extractJsonArray(result.text);
     if (!parsed?.length) {
-      return NextResponse.json({
-        cuts: mockExpenseCuts(expenses),
-        source: "mock",
-        message: "Could not parse Grok JSON — mock fallback",
-        raw: result.text.slice(0, 500),
-        prompt,
-      });
+      return NextResponse.json(
+        {
+          error: "grok_parse",
+          source: "error",
+          unlocked: true,
+          message: "Grok returned text that was not a JSON cut list. Not falling back to mock for a paid session.",
+          raw: result.text.slice(0, 500),
+        },
+        { status: 502 }
+      );
     }
 
     const cuts = parsed.map((item) => {
@@ -71,6 +90,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       cuts,
       source: "live",
+      unlocked: true,
       model: result.model,
       usage: result.usage,
       prompt,
