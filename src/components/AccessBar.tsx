@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WHOP_CHECKOUT_URL_LIVE } from "@/lib/whop-checkout";
 
 export type AccessStatus = {
   unlocked: boolean;
@@ -26,7 +27,7 @@ export function useAccessStatus() {
         if (!cancelled) {
           setStatus({
             unlocked: false,
-            checkoutUrl: "",
+            checkoutUrl: WHOP_CHECKOUT_URL_LIVE,
             planId: null,
             grokFlag: false,
             hasXaiKey: false,
@@ -44,20 +45,16 @@ export function useAccessStatus() {
 }
 
 function badgeText(status: AccessStatus | null): string {
-  if (!status) return "LOADING ACCESS…";
-  if (!status.unlocked) {
-    return status.hasXaiKey
-      ? "FREE MOCK · NO XAI COST · PAY TO UNLOCK GROK"
-      : "FREE MOCK · NO XAI · HELIX_USE_GROK OFF";
-  }
+  if (!status) return "FREE MOCK · NO XAI COST";
+  if (!status.unlocked) return "FREE MOCK · NO XAI COST · PAY TO UNLOCK GROK";
   if (status.grokReady) return "PAID UNLOCK · GROK LIVE";
   if (!status.hasXaiKey) return "PAID UNLOCK · GROK BLOCKED · NO XAI_API_KEY";
-  return "PAID UNLOCK · GROK BLOCKED · HELIX_USE_GROK OFF";
+  return "PAID UNLOCK · GROK BLOCKED";
 }
 
 export function AccessBar() {
   const status = useAccessStatus();
-  const checkoutUrl = status?.checkoutUrl || "";
+  const checkoutUrl = status?.checkoutUrl || WHOP_CHECKOUT_URL_LIVE;
 
   return (
     <div
@@ -81,45 +78,20 @@ export function AccessBar() {
       >
         {badgeText(status)}
       </span>
-      {checkoutUrl ? (
-        <a
-          href={checkoutUrl}
-          style={{
-            background: "#2f6fed",
-            color: "#fff",
-            textDecoration: "none",
-            borderRadius: 8,
-            padding: "6px 12px",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Get access
-        </a>
-      ) : (
-        <button
-          type="button"
-          disabled
-          title="Set WHOP_CHECKOUT_URL on Vercel when the live Whop checkout exists."
-          style={{
-            background: "#1e2a3a",
-            color: "#8b9bb4",
-            border: "1px solid #2a3a50",
-            borderRadius: 8,
-            padding: "6px 12px",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "not-allowed",
-          }}
-        >
-          Get access
-        </button>
-      )}
-      {!checkoutUrl && (
-        <span style={{ color: "#8b9bb4", fontSize: 12 }}>
-          Checkout not configured — set WHOP_CHECKOUT_URL (optional WHOP_PLAN_ID). No fake link.
-        </span>
-      )}
+      <a
+        href={checkoutUrl}
+        style={{
+          background: "#2f6fed",
+          color: "#fff",
+          textDecoration: "none",
+          borderRadius: 8,
+          padding: "6px 12px",
+          fontSize: 13,
+          fontWeight: 600,
+        }}
+      >
+        Get access · $49
+      </a>
     </div>
   );
 }

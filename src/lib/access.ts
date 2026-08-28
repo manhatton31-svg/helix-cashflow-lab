@@ -1,3 +1,8 @@
+import {
+  WHOP_CHECKOUT_URL_LIVE,
+  WHOP_PLAN_ID_LIVE,
+} from "@/lib/whop-checkout";
+
 export const ACCESS_COOKIE = "helix_access";
 export const ACCESS_HEADER = "x-helix-access";
 export const ACCESS_QUERY = "access";
@@ -15,18 +20,19 @@ function trimEnv(value: string | undefined): string {
   return (value || "").trim();
 }
 
-/** Exact Whop checkout URL. Empty means do not invent a link. */
+/** Exact live checkout. Env can override; never invent a different product URL. */
 export function whopCheckoutUrl(): string {
-  if (typeof process === "undefined") return "";
+  if (typeof process === "undefined") return WHOP_CHECKOUT_URL_LIVE;
   return (
     trimEnv(process.env.WHOP_CHECKOUT_URL) ||
-    trimEnv(process.env.NEXT_PUBLIC_WHOP_CHECKOUT_URL)
+    trimEnv(process.env.NEXT_PUBLIC_WHOP_CHECKOUT_URL) ||
+    WHOP_CHECKOUT_URL_LIVE
   );
 }
 
 export function whopPlanId(): string {
-  if (typeof process === "undefined") return "";
-  return trimEnv(process.env.WHOP_PLAN_ID);
+  if (typeof process === "undefined") return WHOP_PLAN_ID_LIVE;
+  return trimEnv(process.env.WHOP_PLAN_ID) || WHOP_PLAN_ID_LIVE;
 }
 
 export function configuredAccessToken(): string {
@@ -35,8 +41,8 @@ export function configuredAccessToken(): string {
 }
 
 export function grokFlagOn(): boolean {
-  if (typeof process === "undefined") return false;
-  return process.env.HELIX_USE_GROK === "1";
+  if (typeof process === "undefined") return true;
+  return process.env.HELIX_USE_GROK !== "0";
 }
 
 export function hasXaiKey(): boolean {
@@ -108,14 +114,14 @@ export type LiveGate =
   | { ok: true }
   | { ok: false; code: "grok_flag_off" | "missing_api_key"; message: string };
 
-/** Paid path only: never silently mock. */
+/** Paid path only: never silently mock. Paid + XAI_API_KEY is enough. */
 export function liveGrokGate(): LiveGate {
-  if (!grokFlagOn()) {
+  if (typeof process !== "undefined" && process.env.HELIX_USE_GROK === "0") {
     return {
       ok: false,
       code: "grok_flag_off",
       message:
-        "Paid unlock is active, but HELIX_USE_GROK is not 1. Live Grok is off — refusing to fake a paid result.",
+        "Paid unlock is active, but HELIX_USE_GROK=0. Live Grok is off — refusing to fake a paid result.",
     };
   }
   if (!hasXaiKey()) {

@@ -32,12 +32,13 @@ export function hasApiKey(): boolean {
 }
 
 /**
- * Server is configured for live Grok (flag + key).
+ * Server can call Grok (xAI key present; HELIX_USE_GROK=0 is a kill switch).
  * API routes still require a paid unlock before calling generate().
  */
 export function liveAiEnabled(): boolean {
   if (typeof process === "undefined") return false;
-  return process.env.HELIX_USE_GROK === "1" && hasApiKey();
+  if (process.env.HELIX_USE_GROK === "0") return false;
+  return hasApiKey();
 }
 
 function getApiKey(): string | undefined {
