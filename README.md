@@ -31,6 +31,7 @@ If a paid session is unlocked but `XAI_API_KEY` is missing (or `HELIX_USE_GROK` 
 | `HELIX_ACCESS_TOKEN` | After-pay unlock | Shared secret. Whop success URL query `?access=` must equal this value. |
 | `HELIX_USE_GROK` | Live Grok | Set to `1` to allow paid sessions to call xAI. Unpaid traffic still uses mock. |
 | `XAI_API_KEY` | Live Grok | xAI / Grok key. **Grok only.** If a paid user hits generate and this is missing, the API returns 503 — no silent mock. |
+| `XAI_MODEL` | Optional | Defaults to `grok-4-latest`. Override if YieldForge wants a pinned Grok model. |
 
 `GROK_API_KEY` is accepted as an alias for `XAI_API_KEY`.  
 `NEXT_PUBLIC_WHOP_CHECKOUT_URL` is an optional alias for `WHOP_CHECKOUT_URL` (the app reads checkout on the server via `/api/access`, so the non-public var is preferred).

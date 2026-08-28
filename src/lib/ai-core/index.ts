@@ -19,7 +19,11 @@ export interface GenerateResult {
   source: "live" | "fallback";
 }
 
-const DEFAULT_MODEL = "grok-2-latest";
+function defaultModel(): string {
+  if (typeof process === "undefined") return "grok-4-latest";
+  return (process.env.XAI_MODEL || "").trim() || "grok-4-latest";
+}
+
 const XAI_URL = "https://api.x.ai/v1/chat/completions";
 
 export function hasApiKey(): boolean {
@@ -50,7 +54,7 @@ export async function generate(
   options: GenerateOptions = {}
 ): Promise<GenerateResult> {
   const apiKey = getApiKey();
-  const model = options.model || DEFAULT_MODEL;
+  const model = options.model || defaultModel();
 
   if (!liveAiEnabled()) {
     return {

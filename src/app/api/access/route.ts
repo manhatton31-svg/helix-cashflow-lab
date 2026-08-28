@@ -22,9 +22,11 @@ function publicStatus(req: Request, unlocked: boolean) {
     message: unlocked
       ? cfg.grokReady
         ? "Paid unlock active. Generator can call Grok."
-        : cfg.hasXaiKey
-          ? "Paid unlock active, but HELIX_USE_GROK is not 1."
-          : "Paid unlock active, but XAI_API_KEY is missing."
+        : !cfg.grokFlag && !cfg.hasXaiKey
+          ? "Paid unlock active, but HELIX_USE_GROK is not 1 and XAI_API_KEY is missing."
+          : !cfg.grokFlag
+            ? "Paid unlock active, but HELIX_USE_GROK is not 1."
+            : "Paid unlock active, but XAI_API_KEY is missing."
       : "Unpaid visitor — free mock path. Pay on Whop to unlock Grok.",
   };
 }
