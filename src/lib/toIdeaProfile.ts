@@ -8,7 +8,7 @@ export function toIdeaProfileContract(
   return {
     version: "1.0" as const,
     source,
-    cost: "free" as const,
+    cost: source === "cashflow-lab-live" ? ("paid" as const) : ("free" as const),
     profile: {
       skills: profile.skills,
       hours: profile.hours,

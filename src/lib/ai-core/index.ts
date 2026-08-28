@@ -27,7 +27,10 @@ export function hasApiKey(): boolean {
   return !!(process.env.XAI_API_KEY || process.env.GROK_API_KEY);
 }
 
-/** Cost gate: live calls require HELIX_USE_GROK=1 AND a key. Default = mock/fallback. */
+/**
+ * Server is configured for live Grok (flag + key).
+ * API routes still require a paid unlock before calling generate().
+ */
 export function liveAiEnabled(): boolean {
   if (typeof process === "undefined") return false;
   return process.env.HELIX_USE_GROK === "1" && hasApiKey();
